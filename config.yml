@@ -1,0 +1,342 @@
+secrets: secrets.yml
+web_server:
+  bind: 0.0.0.0
+  port: 3539
+api: yes
+webui: yes
+templates:
+
+  global:
+    pathscrub: windows
+    verify_ssl_certificates: no
+    regexp:
+      reject:
+        - latino
+        - french
+        - german
+        - ipod
+        - spanish
+        - FASTSUB #French
+        - VOSTFR #French
+        - Subtitulado #Spanish
+        - Special-Wicked #Special trailer episodes from Once Upon a Time
+        - Magazine #No magazines on Arrow, thank you.
+        - NLsubs
+        - rmvb
+        - CpasBien.io
+        - greek
+        - german
+        - russian
+        - swedish
+        - spanish
+        - hindi
+        - arabic
+        - italian
+        - polish
+        - romanian
+        - czech
+        - turkish
+        - korean
+        - hindi
+        - (s|d)ub(s|bed)?\b: {from: title}
+        - \b(duo|tri|quadri|tetra|penta)logy\b: {from: title}
+        - \b3-?D\b: {from: title}
+        - \btrailer\b: {from: title}
+        - \bR5\b: {from: title}
+        - \bWEBSCR\b: {from: title}
+        - \bscreener\b: {from: title}
+        - \bTS\b: {from: title}
+        - \bHDTS\b: {from: title}
+        - \bCam\b: {from: title}
+        - '{C_P}': {from: title}
+        - TrTd TeaM: {from: title}
+        - \[TNTVillage\]: {from: title}
+        - \[facepalm\]: {from: title}
+        - \bFASTSUB\b: {from: title}
+        - VOSTFR: {from: title}
+        - Subtitulado: {from: title}
+        - \bNORDiC\b: {from: title}
+        - \biPad\b: {from: title}
+        - \b(ita|ger|fra|spa|swe|nor|nordic|fr|kor|esp|pl)\b/i: {from: title}
+        - \bR6\b: {from: title}
+        - \bTemporada\b: {from: title}
+    set:
+      skip_files:
+        - "*.nfo"
+        - "*.sfv"
+        - "*[sS]ample*"
+        - "*.txt"
+        - "RARBG.COM.mp4"
+        - RARBG.COM.mp4
+
+    clean_transmission:
+      host: localhost
+      port: 9091
+      username: '{{ secrets.transmission.user }}'
+      password: '{{ secrets.transmission.password }}'
+      finished_for: 1 day
+    headers:
+      User-Agent: "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"
+      Referer: "http://torcache.net/"
+      Accept-Encoding: "deflate, gzip"
+    domain_delay:
+      torcache.net: 5 seconds
+    retry_failed:
+      retry_time: 10 seconds
+      retry_time_multiplier: 1
+      max_retries: 4
+    content_filter:
+      reject:
+        - '*.rar'
+        - '*.zip'
+        - "*.nfo"
+        - "*.sfv"
+        - "*[sS]ample*"
+        - "*.txt"
+        - "RARBG.COM.mp4"
+        - RARBG.COM.mp4
+
+  Email-Sandor:
+    email:
+      from: '{{ secrets.email.from }}'
+      smtp_host: '{{ secrets.email.host }}'
+      smtp_password: '{{ secrets.email.password }}'
+      smtp_port: 587
+      smtp_tls: true
+      smtp_username: '{{ secrets.email.user }}'
+      to: '{{ secrets.email.to.sandor }}'
+      active: true
+
+  Email-Sandor-Katleen:
+    email:
+      from: '{{ secrets.email.from }}'
+      smtp_host: '{{ secrets.email.host }}'
+      smtp_password: '{{ secrets.email.password }}'
+      smtp_port: 587
+      smtp_tls: true
+      smtp_username: '{{ secrets.email.user }}'
+      to: 
+        - '{{ secrets.email.to.sandor }}'
+        - '{{ secrets.email.to.katleen }}'
+      active: true
+
+  Email-Sandor-Clean:
+    email:
+      template: torrent.template
+      subject: clean_torrent_files report
+      from: '{{ secrets.email.from }}'
+      smtp_host: '{{ secrets.email.host }}'
+      smtp_password: '{{ secrets.email.password }}'
+      smtp_port: 587
+      smtp_tls: true
+      smtp_username: '{{ secrets.email.user }}'
+      to: '{{ secrets.email.to.sandor }}'
+      active: true
+  
+  Transmission_settings:
+    transmission:
+      addpaused: false
+      host: localhost
+      password: '{{ secrets.transmission.password }}'
+      port: 9091
+      ratio: 0.2
+      username: '{{ secrets.transmission.user }}'
+      include_subs: yes
+  
+  Movies:
+    template: Transmission_settings
+    quality: "hdtv+"
+    exists_movie:
+      - /raid0/data/Movies/
+    content_size:
+      max: 5000
+    download: /raid2/data/Other/bt-watch-dir/   
+    set:
+      path: /raid0/data/Movies/{{movie_name}} ({{movie_year}}) 
+
+  Movies-rss:
+    verify_ssl_certificates: no
+    inputs:
+      - rss: http://crystaltorrents.com/rss.php?cat=86,61,88,90,89,56,92,55,1,9
+      - rss: https://rarbg.to/rssdd.php?categories=14;48;17;45  
+
+  tv:
+    template: Transmission_settings
+    verify_ssl_certificates: no
+    exists_series:
+      - /raid1/data/Series/
+    thetvdb_lookup: yes
+    inputs:
+      - rss: http://showrss.info/feeds/all.rss
+      - rss: http://showrss.info/user/30408.rss?magnets=true&namespaces=true&name=clean&quality=null&re=null
+
+  disable-seen-retry:
+    disable:
+      - seen
+      - seen_info_hash
+      - retry_failed
+
+tasks:
+  discover-queue-sandor-trakt:
+    template: Email-Sandor
+    verify_ssl_certificates: no
+    trakt_list:
+      account: '{{ secrets.trakt.user }}'
+      list: watchlist
+      type: movies
+    accept_all: yes
+    list_add: 
+      - movie_list: movielist
+
+  discover-queue-sandor-imdb:
+    template: Email-Sandor
+    verify_ssl_certificates: no
+    imdb_list:
+      login: '{{ secrets.imdb.sandor.user }}'
+      password: '{{ secretsimdb.sandor.password }}'
+      list: watchlist
+    accept_all: yes
+    list_add: 
+      - movie_list: movielist
+
+  discover-queue-katleen-imdb:
+    template: Email-Sandor-Katleen
+    verify_ssl_certificates: no
+    imdb_list:
+      login: '{{ secrets.imdb.katleen.user }}'
+      password: '{{ secrets.imdb.katleen.password }}'
+      list: watchlist
+    accept_all: yes
+    list_add: 
+      - movie_list: movielist-katleen
+
+  download-series-filesystem:
+    template: tv    
+    configure_series:
+      from:
+        filesystem:
+          - /raid1/data/Series/
+      settings:
+        set:
+          path: /raid1/data/Series/{{series_name}}/Season {{series_season}}/
+        quality: "<=720p"
+        identified_by: ep
+        specials: yes
+        propers: 7 days
+        tracking: backfill
+
+  download-series-trakt:
+    template: tv
+    configure_series:
+      from:
+        trakt_list:
+          account: "{{ secrets.trakt.user }}"
+          type: shows
+          list: Download-series
+          strip_dates: yes
+      settings:
+        set:
+          path: /raid1/data/Series/{{series_name}}/Season {{series_season}}/
+        quality: "<=720p"
+        identified_by: ep
+        specials: yes
+        propers: 7 days
+        tracking: backfill
+
+  download-movies-sandor:
+    template: 
+      - Movies
+      - Movies-rss
+      - Email-Sandor
+    verify_ssl_certificates: no
+    list_add:
+      - movie_list: movielist
+  
+  download-movies-katleen:
+    template: 
+      - Movies
+      - Movies-rss
+    verify_ssl_certificates: no
+    list_add:
+      - movie_list: movielist-katleen
+
+  download-movies-search-sandor:
+    template:
+      - Movies
+      - Email-Sandor
+    verify_ssl_certificates: no
+    torrent_alive: yes
+    discover:
+      what:
+        - movie_list:
+            list_name: movielist
+      from:
+        #- torrentleech:
+        #    rss_key: '{{ secrets.torrentleech.rss_key }}'
+        #    username: '{{ secrets.torrentleech.username }}'
+        #    password: '{{ secrets.torrentleech.password}}'
+        #    category: ['DVDRip', 'HD']
+        #- rarbg: 
+        #    category:
+        #      - x264 720p
+        #      - x264 1080p
+        - search_rss: http://torrentproject.se/?s={{search_term}}&out=rss
+    imdb_lookup: no
+    list_match:
+      from:
+        - movie_list: movielist
+
+  download-movies-search-katleen:
+    template:
+      - Movies
+      - Email-Sandor-Katleen
+    verify_ssl_certificates: no
+    torrent_alive: yes
+    discover:
+      what:
+        - movie_list:
+            list_name: movielist-katleen
+      from:
+        #- torrentleech:
+        #    rss_key: '{{ secrets.torrentleech.rss_key }}'
+        #    username: '{{ secrets.torrentleech.username }}'
+        #    password: '{{ secrets.torrentleech.password}}'
+        #    category: ['DVDRip', 'HD']
+        #- rarbg: 
+        #    category:
+        #      - x264 720p
+        #      - x264 1080p
+        - search_rss: http://torrentproject.se/?s={{search_term}}&out=rss
+    imdb_lookup: no
+    list_match:
+      from:
+        - movie_list: movielist
+
+
+  clean-torrent-files:
+    template:
+      - disable-seen-retry
+      - Email-Sandor-Clean
+    filesystem:
+      path:
+        - /raid2/data/Other/bt-watch-dir/
+        - /raid1/data/Series/
+        - /raid0/data/Movies/
+      recursive: yes
+      retrieve: files
+      regexp: '.*.(torrent|added)$'
+    accept_all: yes
+    exec:
+      on_output:
+        for_accepted: rm -f "{{location}}"
+
+schedules:
+  - tasks: [download-*]
+    interval:
+      minutes: 30
+  - tasks: [discover-*]
+    interval:
+      hours: 5
+  - tasks: [clean-*]
+    interval:
+      weeks: 1
