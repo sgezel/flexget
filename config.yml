@@ -157,8 +157,10 @@ templates:
   Movies-rss:
     verify_ssl_certificates: no
     inputs:
-      - rss: http://crystaltorrents.com/rss.php?cat=86,61,88,90,89,56,92,55,1,9
-      - rss: https://rarbg.to/rssdd.php?categories=14;48;17;45  
+      - rss: https://www.torlock.com/movies/rss.xml
+      - rss: https://rarbg.to/rssdd.php?categories=14;48;17;45
+      - rss: https://www.torrentfunk.com/movies/rss.xml
+      - rss: http://flashtorrents.org/rss.php?cat=42,53,49&dllink=1
 
   tv:
     template: Transmission_settings
@@ -281,6 +283,9 @@ tasks:
         #      - x264 720p
         #      - x264 1080p
         - search_rss: http://torrentproject.se/?s={{search_term}}&out=rss
+        - search_rss: https://torrentreactor.com/rss.php?search={{search_term}}&category=5
+        - search_rss: http://www.torrentdownloads.me/rss.xml?type=search&cid=4&search={{search_term}}
+        - search_rss: https://www.limetorrents.cc/searchrss/{{search_term}}/
     imdb_lookup: no
     list_match:
       from:
@@ -307,6 +312,9 @@ tasks:
         #      - x264 720p
         #      - x264 1080p
         - search_rss: http://torrentproject.se/?s={{search_term}}&out=rss
+        - search_rss: https://torrentreactor.com/rss.php?search={{search_term}}&category=5
+        - search_rss: http://www.torrentdownloads.me/rss.xml?type=search&cid=4&search={{search_term}}
+        - search_rss: https://www.limetorrents.cc/searchrss/{{search_term}}/
     imdb_lookup: no
     list_match:
       from:
