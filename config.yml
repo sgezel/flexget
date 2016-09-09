@@ -278,13 +278,15 @@ tasks:
         #    username: '{{ secrets.torrentleech.username }}'
         #    password: '{{ secrets.torrentleech.password}}'
         #    category: ['DVDRip', 'HD']
-        #- rarbg: 
-        #    category:
-        #      - x264 720p
-        #      - x264 1080p
+        - 1337x: yes
+        - limetorrents:
+            category: movies
+            order_by: seeds
+        - rarbg: 
+            category:
+              - x264 720p
+              - x264 1080p
         - search_rss: http://torrentproject.se/?s={{search_term}}&out=rss
-        - search_rss: https://torrentreactor.com/rss.php?search={{search_term}}&category=5
-        - search_rss: http://www.torrentdownloads.me/rss.xml?type=search&cid=4&search={{search_term}}
         - search_rss: https://www.limetorrents.cc/searchrss/{{search_term}}/
     imdb_lookup: no
     list_match:
@@ -307,13 +309,15 @@ tasks:
         #    username: '{{ secrets.torrentleech.username }}'
         #    password: '{{ secrets.torrentleech.password}}'
         #    category: ['DVDRip', 'HD']
-        #- rarbg: 
-        #    category:
-        #      - x264 720p
-        #      - x264 1080p
+        - 1337x: yes
+        - limetorrents:
+            category: movies
+            order_by: seeds
+        - rarbg: 
+            category:
+              - x264 720p
+              - x264 1080p
         - search_rss: http://torrentproject.se/?s={{search_term}}&out=rss
-        - search_rss: https://torrentreactor.com/rss.php?search={{search_term}}&category=5
-        - search_rss: http://www.torrentdownloads.me/rss.xml?type=search&cid=4&search={{search_term}}
         - search_rss: https://www.limetorrents.cc/searchrss/{{search_term}}/
     imdb_lookup: no
     list_match:
