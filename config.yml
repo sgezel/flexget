@@ -38,6 +38,7 @@ templates:
         - turkish
         - korean
         - hindi
+        - rus
         - (s|d)ub(s|bed)?\b: {from: title}
         - \b(duo|tri|quadri|tetra|penta)logy\b: {from: title}
         - \b3-?D\b: {from: title}
@@ -60,15 +61,6 @@ templates:
         - \b(ita|ger|fra|spa|swe|nor|nordic|fr|kor|esp|pl)\b/i: {from: title}
         - \bR6\b: {from: title}
         - \bTemporada\b: {from: title}
-    set:
-      skip_files:
-        - "*.nfo"
-        - "*.sfv"
-        - "*[sS]ample*"
-        - "*.txt"
-        - "RARBG.COM.mp4"
-        - RARBG.COM.mp4
-
     clean_transmission:
       host: localhost
       port: 9091
@@ -89,13 +81,6 @@ templates:
       reject:
         - '*.rar'
         - '*.zip'
-        - "*.nfo"
-        - "*.sfv"
-        - "*[sS]ample*"
-        - "*.txt"
-        - "RARBG.COM.mp4"
-        - RARBG.COM.mp4
-
   Email-Sandor:
     email:
       from: '{{ secrets.email.from }}'
@@ -142,6 +127,17 @@ templates:
       ratio: 0.2
       username: '{{ secrets.transmission.user }}'
       include_subs: yes
+      skip_files:
+        - "*.nfo"
+        - "*.sfv"
+        - "*[sS]ample*"
+        - "*.txt"
+        - "RARBG.COM.mp4"
+        - RARBG.COM.mp4
+        - "ETRG.mp4"
+        - "*.jpg"
+        - "*.jpeg"
+        - ETRG.mp4
   
   Movies:
     template: Transmission_settings
@@ -213,7 +209,9 @@ tasks:
       - movie_list: movielist-katleen
 
   download-series-filesystem:
-    template: tv    
+    template: 
+      - tv
+      - Email-Sandor   
     configure_series:
       from:
         filesystem:
@@ -228,7 +226,9 @@ tasks:
         tracking: backfill
 
   download-series-trakt:
-    template: tv
+    template: 
+      - tv
+      - Email-Sandor
     configure_series:
       from:
         trakt_list:
@@ -322,7 +322,7 @@ tasks:
     imdb_lookup: no
     list_match:
       from:
-        - movie_list: movielist
+        - movie_list: movielist-katleen
 
 
   clean-torrent-files:
