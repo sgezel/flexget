@@ -93,7 +93,7 @@ templates:
             smtp_username: '{{ secrets.email.user }}'
             to: '{{ secrets.email.to.sandor }}'
             html: yes
-            file_template: accepted
+            file_template: html
 
   Email-Sandor-Katleen:
     notify_entries:
@@ -109,7 +109,7 @@ templates:
               - '{{ secrets.email.to.sandor }}'
               - '{{ secrets.email.to.katleen }}'
             html: yes
-            file_template: accepted
+            file_template: html
 
   Email-Sandor-Clean:
     notify_entries:
