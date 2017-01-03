@@ -2,8 +2,7 @@ secrets: secrets.yml
 web_server:
   bind: 0.0.0.0
   port: 3539
-api: yes
-webui: yes
+
 templates:
 
   global:
@@ -81,42 +80,51 @@ templates:
       reject:
         - '*.rar'
         - '*.zip'
+
   Email-Sandor:
-    email:
-      from: '{{ secrets.email.from }}'
-      smtp_host: '{{ secrets.email.host }}'
-      smtp_password: '{{ secrets.email.password }}'
-      smtp_port: 587
-      smtp_tls: true
-      smtp_username: '{{ secrets.email.user }}'
-      to: '{{ secrets.email.to.sandor }}'
-      active: true
+    notify_entries:
+      to: 
+        - email:
+            from: '{{ secrets.email.from }}'
+            smtp_host: '{{ secrets.email.host }}'
+            smtp_password: '{{ secrets.email.password }}'
+            smtp_port: 587
+            smtp_tls: true
+            smtp_username: '{{ secrets.email.user }}'
+            to: '{{ secrets.email.to.sandor }}'
+            html: yes
+            file_template: accepted
 
   Email-Sandor-Katleen:
-    email:
-      from: '{{ secrets.email.from }}'
-      smtp_host: '{{ secrets.email.host }}'
-      smtp_password: '{{ secrets.email.password }}'
-      smtp_port: 587
-      smtp_tls: true
-      smtp_username: '{{ secrets.email.user }}'
+    notify_entries:
       to: 
-        - '{{ secrets.email.to.sandor }}'
-        - '{{ secrets.email.to.katleen }}'
-      active: true
+        - email:
+            from: '{{ secrets.email.from }}'
+            smtp_host: '{{ secrets.email.host }}'
+            smtp_password: '{{ secrets.email.password }}'
+            smtp_port: 587
+            smtp_tls: true
+            smtp_username: '{{ secrets.email.user }}'
+            to: 
+              - '{{ secrets.email.to.sandor }}'
+              - '{{ secrets.email.to.katleen }}'
+            html: yes
+            file_template: accepted
 
   Email-Sandor-Clean:
-    email:
-      template: torrent.template
-      subject: clean_torrent_files report
-      from: '{{ secrets.email.from }}'
-      smtp_host: '{{ secrets.email.host }}'
-      smtp_password: '{{ secrets.email.password }}'
-      smtp_port: 587
-      smtp_tls: true
-      smtp_username: '{{ secrets.email.user }}'
-      to: '{{ secrets.email.to.sandor }}'
-      active: true
+    notify_entries:
+      to: 
+        - email:
+            file_template: torrent.template
+            title: "clean_torrent_files report"
+            from: '{{ secrets.email.from }}'
+            smtp_host: '{{ secrets.email.host }}'
+            smtp_password: '{{ secrets.email.password }}'
+            smtp_port: 587
+            smtp_tls: true
+            smtp_username: '{{ secrets.email.user }}'
+            to: '{{ secrets.email.to.sandor }}'
+            html: yes
   
   Transmission_settings:
     transmission:
@@ -131,6 +139,7 @@ templates:
         - "*.nfo"
         - "*.sfv"
         - "*[sS]ample*"
+        - "*SAMPLE"
         - "*.txt"
         - "RARBG.COM.mp4"
         - RARBG.COM.mp4
@@ -138,6 +147,7 @@ templates:
         - "*.jpg"
         - "*.jpeg"
         - ETRG.mp4
+      main_file_only: yes
   
   Movies:
     template: Transmission_settings
@@ -166,7 +176,7 @@ templates:
     thetvdb_lookup: yes
     inputs:
       - rss: http://showrss.info/feeds/all.rss
-      - rss: http://showrss.info/user/30408.rss?magnets=true&namespaces=true&name=clean&quality=null&re=null
+      - rss: http://showrss.info/user/30408.rss?magnets=true&namespaces=true&name=clean&quality=null&re=no
 
   disable-seen-retry:
     disable:
@@ -273,11 +283,6 @@ tasks:
         - movie_list:
             list_name: movielist
       from:
-        #- torrentleech:
-        #    rss_key: '{{ secrets.torrentleech.rss_key }}'
-        #    username: '{{ secrets.torrentleech.username }}'
-        #    password: '{{ secrets.torrentleech.password}}'
-        #    category: ['DVDRip', 'HD']
         - 1337x: yes
         - limetorrents:
             category: movies
@@ -304,11 +309,6 @@ tasks:
         - movie_list:
             list_name: movielist-katleen
       from:
-        #- torrentleech:
-        #    rss_key: '{{ secrets.torrentleech.rss_key }}'
-        #    username: '{{ secrets.torrentleech.username }}'
-        #    password: '{{ secrets.torrentleech.password}}'
-        #    category: ['DVDRip', 'HD']
         - 1337x: yes
         - limetorrents:
             category: movies
