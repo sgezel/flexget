@@ -166,7 +166,6 @@ templates:
       - rss: https://www.torlock.com/movies/rss.xml
       - rss: https://rarbg.to/rssdd.php?categories=14;48;17;45
       - rss: https://www.torrentfunk.com/movies/rss.xml
-      - rss: http://flashtorrents.org/rss.php?cat=42,53,49&dllink=1
 
   tv:
     template: Transmission_settings
