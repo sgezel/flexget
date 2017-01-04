@@ -82,7 +82,7 @@ templates:
         - '*.zip'
 
   Email-Sandor:
-    notify_entries:
+    notify_task:
       to: 
         - email:
             from: '{{ secrets.email.from }}'
@@ -194,6 +194,15 @@ tasks:
     accept_all: yes
     list_add: 
       - movie_list: movielist
+    list_remove:
+      - trakt_list:
+          account: '{{ secrets.trakt.user }}'
+          list: watchlist
+          type: movies
+      - imdb_list:
+          login: '{{ secrets.imdb.sandor.user }}'
+          password: '{{ secretsimdb.sandor.password }}'
+          list: watchlist          
 
   discover-queue-sandor-imdb:
     template: Email-Sandor
@@ -205,6 +214,15 @@ tasks:
     accept_all: yes
     list_add: 
       - movie_list: movielist
+    list_remove:
+      - trakt_list:
+          account: '{{ secrets.trakt.user }}'
+          list: watchlist
+          type: movies
+      - imdb_list:
+          login: '{{ secrets.imdb.sandor.user }}'
+          password: '{{ secretsimdb.sandor.password }}'
+          list: watchlist
 
   discover-queue-katleen-imdb:
     template: Email-Sandor-Katleen
@@ -290,7 +308,6 @@ tasks:
             category:
               - x264 720p
               - x264 1080p
-        - search_rss: http://torrentproject.se/?s={{search_term}}&out=rss
         - search_rss: https://www.limetorrents.cc/searchrss/{{search_term}}/
     imdb_lookup: no
     list_match:
@@ -316,18 +333,29 @@ tasks:
             category:
               - x264 720p
               - x264 1080p
-        - search_rss: http://torrentproject.se/?s={{search_term}}&out=rss
         - search_rss: https://www.limetorrents.cc/searchrss/{{search_term}}/
     imdb_lookup: no
     list_match:
       from:
         - movie_list: movielist-katleen
+        
+  test-notify-email:
+    template:
+      - Email-Sandor
+      - disable-seen-retry
+    mock:
+      - {title: "Sherlock S04E01", url: 'http://thetvdb.com/?tab=episode&seriesid=176941&seasonid=682348&id=5776502&lid=7'}
+      - {title: "Sherlock S04E02", url: 'http://thetvdb.com/?tab=episode&seriesid=176941&seasonid=682348&id=5776503&lid=7'}
+    regexp:
+      accept:
+        - Sherlock
+    thetvdb_lookup: yes
 
 
   clean-torrent-files:
     template:
       - disable-seen-retry
-      - Email-Sandor-Clean
+      #- Email-Sandor-Clean
     filesystem:
       path:
         - /raid2/data/Other/bt-watch-dir/
