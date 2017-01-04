@@ -202,6 +202,10 @@ tasks:
       - imdb_list:
           login: '{{ secrets.imdb.sandor.user }}'
           password: '{{ secretsimdb.sandor.password }}'
+          list: watchlist
+      - imdb_list:
+          login: '{{ secrets.imdb.katleen.user }}'
+          password: '{{ secrets.imdb.katleen.password }}'
           list: watchlist          
 
   discover-queue-sandor-imdb:
@@ -223,6 +227,10 @@ tasks:
           login: '{{ secrets.imdb.sandor.user }}'
           password: '{{ secretsimdb.sandor.password }}'
           list: watchlist
+      - imdb_list:
+          login: '{{ secrets.imdb.katleen.user }}'
+          password: '{{ secrets.imdb.katleen.password }}'
+          list: watchlist
 
   discover-queue-katleen-imdb:
     template: Email-Sandor-Katleen
@@ -234,6 +242,19 @@ tasks:
     accept_all: yes
     list_add: 
       - movie_list: movielist-katleen
+    list_remove:
+      - trakt_list:
+          account: '{{ secrets.trakt.user }}'
+          list: watchlist
+          type: movies
+      - imdb_list:
+          login: '{{ secrets.imdb.sandor.user }}'
+          password: '{{ secretsimdb.sandor.password }}'
+          list: watchlist
+      - imdb_list:
+          login: '{{ secrets.imdb.katleen.user }}'
+          password: '{{ secrets.imdb.katleen.password }}'
+          list: watchlist
 
   download-series-filesystem:
     template: 
